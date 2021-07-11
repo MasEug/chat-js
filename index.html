@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chat js</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+
+<!-- Создание меню на сайте (без функций) -->
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <h5 class="my-0 mr-md-auto">Chat.ok</h5>
+    <nav class="my-2 my-md-0 mr-md-3">
+        <a class="p-2 text-dark" href="#">Главная</a>
+        <a class="p-2 text-dark" href="#">Про нас</a>
+        <a class="p-2 text-dark" href="#">Поддержка</a>
+        <a class="p-2 text-dark" href="#">Цены</a>
+    </nav>
+    <a class="btn btn-outline-primary" href="#">Регистрация</a>
+</div>
+
+<!-- Основная часть страницы -->
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Чат программа</h2>
+        <p class="lead">Укажите ваше имя и начинайте переписку</p>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <!-- Форма для получения сообщений и имени -->
+            <h3>Форма сообщений</h3>
+            <form id="messForm">
+                <label for="name">Имя</label>
+                <input type="text" name="name" id="name" placeholder="Введите имя" class="form-control">
+                <br>
+                <label for="message">Сообщение</label>
+                <textarea name="message" id="message" class="form-control" placeholder="Введите сообщение"></textarea>
+                <br>
+                <input type="submit" value="Отправить" class="btn btn-danger">
+            </form>
+        </div>
+        <div class="col-6">
+            <h3>Сообщения</h3>
+            <!-- Вывод всех сообщений будет здесь -->
+            <div id="all_mess"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    let socket = io();
+
+    const min = 1;
+    const max = 6;
+    const random = Math.floor(Math.random() * (max - min)) + min;
+
+    let alertClass;
+
+    switch (random) {
+        case 1:
+            alertClass = 'secondary';
+            break;
+        case 2:
+            alertClass = 'danger';
+            break;
+        case 3:
+            alertClass = 'success';
+            break;
+        case 4:
+            alertClass = 'warning';
+            break;
+        case 5:
+            alertClass = 'info';
+            break;
+        case 6:
+            alertClass = 'light';
+            break;
+    }
+
+    const form = document.getElementById('messForm');
+    const input = document.getElementById('name');
+
+    const message = document.getElementById('message');
+
+    const allMessages = document.getElementById('all_mess');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        console.log('---', input.value, message.value)
+
+        if (input.value) {
+            socket.emit('chat message', {mess: message.value, name: input.value, className: alertClass});
+            message.value = ""
+        }
+    });
+
+    socket.on('chat message', function (msg) {
+
+        allMessages.insertAdjacentHTML('beforebegin',
+            `<div class='alert alert-${msg.className}'><b>${msg.name}</b>: ${msg.mess}</div>`);
+
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
+</body>
+</html>
