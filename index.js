@@ -6,23 +6,10 @@ const http = require('http').createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(http);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 
 users = [];
 connections = [];
-
-// io.on('connection', (socket) => {
-//
-//     console.log('a user connected');
-//
-//     connections.push(socket);
-//
-//     socket.on('disconnect', (data) => {
-//         connections.splice(connections.indexOf(socket), 1)
-//         console.log('off');
-//     })
-// });
-//
 
 http.listen(port, () => {
     console.log(`Socket.IO server running at http://localhost:${port}/`);
